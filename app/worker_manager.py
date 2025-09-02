@@ -16,6 +16,7 @@ from app.libs.executors.executor import ProcessExecuteResult
 from app.model import Submission, SubmissionResult, WorkPayload, ResultReason
 from app.libs.executors.python_executor import PythonExecutor, ScriptExecutor
 from app.libs.executors.cpp_executor import CppExecutor
+from app.libs.executors.jvm_executor import JvmExecutor
 from app.libs.executors.executor import TIMEOUT_EXIT_CODE
 import app.config as app_config
 from app.work_queue import connect_queue
@@ -59,6 +60,21 @@ def executor_factory(type: str) -> ScriptExecutor:
         return CppExecutor(
             compiler_cl=app_config.CPP_COMPILE_COMMAND,
             run_cl=app_config.CPP_EXECUTE_COMMAND,
+            timeout=app_config.MAX_EXECUTION_TIME,
+            memory_limit=app_config.MAX_MEMORY * 1024 * 1024,
+        )
+    elif type in ['java', 'kotlin']:
+        # Use different compilers and runtimes based on language
+        if type == 'java':
+            compiler_cl = app_config.JAVA_COMPILE_COMMAND
+            run_cl = app_config.JAVA_EXECUTE_COMMAND
+        else:  # kotlin
+            compiler_cl = app_config.KOTLIN_COMPILE_COMMAND
+            run_cl = app_config.KOTLIN_EXECUTE_COMMAND
+
+        return JvmExecutor(
+            compiler_cl=compiler_cl,
+            run_cl=run_cl,
             timeout=app_config.MAX_EXECUTION_TIME,
             memory_limit=app_config.MAX_MEMORY * 1024 * 1024,
         )

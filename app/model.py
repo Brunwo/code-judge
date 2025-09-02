@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 
 class Submission(BaseModel):
     sub_id: str | None = None
-    type: Literal['python', 'cpp', 'math']
+    type: Literal['python', 'cpp', 'math', 'java', 'kotlin']
     options: dict[str, str] | None = None
     solution: str
     input: str | None = None
